@@ -58,6 +58,27 @@ EXPLAIN SELECT * FROM test_table WHERE num = 1;
 
 #### 3. Реализовать индекс для полнотекстового поиска
 
+CREATE INDEX ON test_table(text1);
+
+        newdb=#
+        newdb=# CREATE INDEX ON test_table(text1);
+        CREATE INDEX
+        newdb=#
+
+EXPLAIN SELECT * FROM test_table WHERE text1 = 'a';
+
+        newdb=#
+        newdb=# EXPLAIN SELECT * FROM test_table WHERE text1 = 'a';
+                                              QUERY PLAN
+        ---------------------------------------------------------------------------------------
+         Bitmap Heap Scan on test_table  (cost=16.72..473.30 rows=1087 width=8)
+           Recheck Cond: (text1 = 'a'::text)
+           ->  Bitmap Index Scan on test_table_text1_idx  (cost=0.00..16.45 rows=1087 width=0)
+                 Index Cond: (text1 = 'a'::text)
+        (4 rows)
+        
+        newdb=#
+
 
 #### 4. Реализовать индекс на часть таблицы или индекс на поле с функцией
 
