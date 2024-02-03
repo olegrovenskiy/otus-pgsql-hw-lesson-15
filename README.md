@@ -45,6 +45,15 @@ ANALYZE test_table;
 
 EXPLAIN SELECT * FROM test_table WHERE num = 1;
 
+        newdb=#
+        newdb=# EXPLAIN SELECT * FROM test_table WHERE num = 1;
+                                             QUERY PLAN
+        -------------------------------------------------------------------------------------
+         Index Scan using test_table_num_idx on test_table  (cost=0.29..8.31 rows=1 width=8)
+           Index Cond: (num = 1)
+        (2 rows)
+        
+        newdb=#
 
 
 #### 3. Реализовать индекс для полнотекстового поиска
