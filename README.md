@@ -82,6 +82,20 @@ EXPLAIN SELECT * FROM test_table WHERE text1 = 'a';
 
 #### 4. Реализовать индекс на часть таблицы или индекс на поле с функцией
 
+CREATE INDEX ON test_table(text1) WHERE text2 = 'a';
+EXPLAIN SELECT * FROM test_table WHERE text2 = 'a';
+
+        newdb=# CREATE INDEX ON test_table(text1) WHERE text2 = 'a';
+        CREATE INDEX
+        newdb=# EXPLAIN SELECT * FROM test_table WHERE text2 = 'a';
+                                               QUERY PLAN
+        ----------------------------------------------------------------------------------------
+         Bitmap Heap Scan on test_table  (cost=13.86..470.45 rows=1087 width=8)
+           Recheck Cond: (text2 = 'a'::text)
+           ->  Bitmap Index Scan on test_table_text1_idx1  (cost=0.00..13.59 rows=1087 width=0)
+        (3 rows)
+
+
 
 #### 5. Создать индекс на несколько полей
 
