@@ -54,7 +54,7 @@ EXPLAIN SELECT * FROM test_table WHERE num = 1;
         (2 rows)
         
         newdb=#
-
+для запроса select согласно explain используется созданный индекс по полю num
 
 #### 3. Реализовать индекс для полнотекстового поиска
 
@@ -64,6 +64,8 @@ CREATE INDEX ON test_table(text1);
         newdb=# CREATE INDEX ON test_table(text1);
         CREATE INDEX
         newdb=#
+        
+индекс по текстовому полю text1
 
 EXPLAIN SELECT * FROM test_table WHERE text1 = 'a';
 
@@ -95,7 +97,7 @@ EXPLAIN SELECT * FROM test_table WHERE text2 = 'a';
            ->  Bitmap Index Scan on test_table_text1_idx1  (cost=0.00..13.59 rows=1087 width=0)
         (3 rows)
 
-
+индекс с условием
 
 #### 5. Создать индекс на несколько полей
 
@@ -114,7 +116,8 @@ EXPLAIN SELECT * FROM test_table WHERE text1 = 'a' and num <= 100;
         
         newdb=#
 
+индекс по полям num и text1
 
 Написать комментарии к каждому из индексов
-Описать что и как делали и с какими проблемами
-столкнулись
+Описать что и как делали и с какими проблемами столкнулись - в целом тема хорошо доведена, примеры с вебинара тоже понятны. Единственная сложность придумать 
+таблицу в которой наиболеен полно можно было бы провести работу с индексами. но это уже скорее всего в процессе работы на рабочих базах.
