@@ -99,6 +99,21 @@ EXPLAIN SELECT * FROM test_table WHERE text2 = 'a';
 
 #### 5. Создать индекс на несколько полей
 
+CREATE INDEX ON test_table(num, text1);
+EXPLAIN SELECT * FROM test_table WHERE text1 = 'a' and num <= 100;
+
+        newdb=#
+        newdb=# CREATE INDEX ON test_table(num, text1);
+        CREATE INDEX
+        newdb=# EXPLAIN SELECT * FROM test_table WHERE text1 = 'a' and num <= 100;
+                                                QUERY PLAN
+        -------------------------------------------------------------------------------------------
+         Index Scan using test_table_num_text1_idx on test_table  (cost=0.29..9.29 rows=1 width=8)
+           Index Cond: ((num <= 100) AND (text1 = 'a'::text))
+        (2 rows)
+        
+        newdb=#
+
 
 Написать комментарии к каждому из индексов
 Описать что и как делали и с какими проблемами
