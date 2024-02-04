@@ -33,8 +33,6 @@ CREATE INDEX ON test_table(num);
     CREATE INDEX
     newdb=#
 
-
-
 #### 2. Прислать текстом результат команды explain, в которой используется данный индекс
 
 ANALYZE test_table;
@@ -122,3 +120,31 @@ EXPLAIN SELECT * FROM test_table WHERE text1 = 'a' and num <= 100;
 
 В целом тема хорошо доведена, примеры с вебинара тоже понятны. Единственная сложность придумать 
 таблицу в которой наиболеен полно можно было бы провести работу с индексами. но это уже скорее всего в процессе работы на рабочих базах.
+
+#### Замечания
+
+##### 1. Индекс с именем
+
+        newdb=# CREATE INDEX lesson15 ON test_table(num);
+        CREATE INDEX
+        newdb=#
+        newdb=#
+        newdb=# ANALYZE test_table;
+        ANALYZE
+        newdb=#
+        newdb=#
+        newdb=# EXPLAIN SELECT * FROM test_table WHERE num = 1;
+                                        QUERY PLAN
+        ---------------------------------------------------------------------------
+         Index Scan using lesson15 on test_table  (cost=0.29..8.31 rows=1 width=8)
+           Index Cond: (num = 1)
+        (2 rows)
+        
+        newdb=#
+        
+Да, этот момент упустил на вебинаре. Создал индекс с именем, в explain видно что он используется при select.
+
+##### Реализовать индекс для полнотекстового поиска
+
+
+
