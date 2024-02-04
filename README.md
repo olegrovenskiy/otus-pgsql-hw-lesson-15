@@ -146,6 +146,7 @@ EXPLAIN SELECT * FROM test_table WHERE text1 = 'a' and num <= 100;
 
 ##### 2. Реализовать индекс для полнотекстового поиска (индекс типа GIN)
 
+##### a. JSON
 Создана таблица с json полем
 
 CREATE TABLE items (
@@ -214,8 +215,59 @@ newdb=#
 
 из explain видно что созданный gin индекс применился
 
+##### b. Текстовые данные
 
+Создание таблицы
 
+        CREATE TABLE articles (
+        id SERIAL PRIMARY KEY,
+        title TEXT,
+        content TEXT
+        );
+        
+        
+        INSERT INTO articles (title, content) VALUES
+        ('PostgreSQL Index Types', 'PostgreSQL provides several index types: B-tree, Hash, GiST, SP-GiST, GIN, BRIN.'),
+        ('B-Tree', 'B-trees can handle equality and range queries on data that can be sorted into some ordering.'),
+        ('Hash', 'Hash indexes store a 32-bit hash code derived from the value of the indexed column.');
+        
+        newdb=#
+        newdb=# CREATE TABLE articles (
+        newdb(# id SERIAL PRIMARY KEY,
+        newdb(# title TEXT,
+        newdb(# content TEXT
+        newdb(# );
+        CREATE TABLE
+        
+        ewdb=#
+        newdb=# INSERT INTO articles (title, content) VALUES
+        newdb-# ('PostgreSQL Index Types', 'PostgreSQL provides several index types: B-tree, Hash, GiST, SP-GiST, GIN, BRIN.'),
+        newdb-# ('B-Tree', 'B-trees can handle equality and range queries on data that can be sorted into some ordering.'),
+        newdb-# ('Hash', 'Hash indexes store a 32-bit hash code derived from the value of the indexed column.');
+        INSERT 0 3
+        newdb=#
+        
+        newdb=#
+        newdb=#  select * from articles;
+         id |         title          |                                           content
+        ----+------------------------+----------------------------------------------------------------------------------------------
+          1 | PostgreSQL Index Types | PostgreSQL provides several index types: B-tree, Hash, GiST, SP-GiST, GIN, BRIN.
+          2 | B-Tree                 | B-trees can handle equality and range queries on data that can be sorted into some ordering.
+          3 | Hash                   | Hash indexes store a 32-bit hash code derived from the value of the indexed column.
+        (3 rows)
+        
+        newdb=#
+        
+ Добавление столбца tsvector для полнотекстового поиска
 
+        newdb=#
+        newdb=# ALTER TABLE articles ADD COLUMN content_tsvector TSVECTOR GENERATED ALWAYS
+        newdb-# AS (to_tsvector('english', content)) STORED;
+        ALTER TABLE
+        newdb=#
+
+Созданём GIN индекс для столбца tsvector
+
+CREATE INDEX lesson15fultext ON articles USING gin (content_tsvector);
 
 
