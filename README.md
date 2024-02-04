@@ -144,7 +144,78 @@ EXPLAIN SELECT * FROM test_table WHERE text1 = 'a' and num <= 100;
         
 Да, этот момент упустил на вебинаре. Создал индекс с именем, в explain видно что он используется при select.
 
-##### Реализовать индекс для полнотекстового поиска
+##### Реализовать индекс для полнотекстового поиска (индекс типа GIN)
+
+Создана таблица с json полем
+
+CREATE TABLE items (
+id SERIAL PRIMARY KEY,
+data JSONB
+);
+
+
+INSERT INTO items (data) VALUES
+('{"type": "book", "athor": {"id": 1, "name": "Pushkin"}}'),
+('{"type": "book", "athor": {"id": 2, "name": "Tolstoy"}}'),
+('{"type": "song", "athor": {"id": 3, "name": "Lenon"}}'),
+('{"type": "song", "athor": {"id": 1, "name": "Makartni"}}');
+
+
+        newdb=#
+        newdb=# CREATE TABLE items (
+        newdb(# id SERIAL PRIMARY KEY,
+        newdb(# data JSONB
+        newdb(# );
+        CREATE TABLE
+        newdb=# INSERT INTO items (data) VALUES
+        newdb-# ('{"type": "book", "athor": {"id": 1, "name": "Pushkin"}}'),
+        newdb-# ('{"type": "book", "athor": {"id": 2, "name": "Tolstoy"}}'),
+        newdb-# ('{"type": "song", "athor": {"id": 3, "name": "Lenon"}}'),
+        newdb-# ('{"type": "song", "athor": {"id": 1, "name": "Makartni"}}');
+        INSERT 0 4
+        newdb=#
+        newdb=# select * from items;
+         id |                           data
+        ----+----------------------------------------------------------
+          1 | {"type": "book", "athor": {"id": 1, "name": "Pushkin"}}
+          2 | {"type": "book", "athor": {"id": 2, "name": "Tolstoy"}}
+          3 | {"type": "song", "athor": {"id": 3, "name": "Lenon"}}
+          4 | {"type": "song", "athor": {"id": 1, "name": "Makartni"}}
+        (4 rows)
+        
+        newdb=#
+        
+создание индекса
+
+CREATE INDEX lesson15json ON items USING gin (data);
+
+        newdb=# CREATE INDEX lesson15json ON items USING gin (data);
+        CREATE INDEX
+        newdb=#
+
+Проверка использования
+
+        newdb=#
+        newdb=# SET enable_seqscan = OFF;
+        SET
+        newdb=# ANALYZE items;
+        ANALYZE
+        
+        newdb=# EXPLAIN SELECT * FROM items WHERE data @> '{"type": "book"}';
+                                         QUERY PLAN
+        ----------------------------------------------------------------------------
+         Bitmap Heap Scan on items  (cost=12.00..16.01 rows=1 width=83)
+           Recheck Cond: (data @> '{"type": "book"}'::jsonb)
+           ->  Bitmap Index Scan on lesson15json  (cost=0.00..12.00 rows=1 width=0)
+                 Index Cond: (data @> '{"type": "book"}'::jsonb)
+        (4 rows)
+
+newdb=#
+
+из explain видно что созданный gin индекс применился
+
+
+
 
 
 
