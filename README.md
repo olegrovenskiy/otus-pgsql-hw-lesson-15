@@ -270,4 +270,27 @@ newdb=#
 
 CREATE INDEX lesson15fultext ON articles USING gin (content_tsvector);
 
+        newdb=#
+        newdb=# CREATE INDEX lesson15fultext ON articles USING gin (content_tsvector);
+        CREATE INDEX
+        newdb=#
+
+Демонстрация применения индекса
+
+        newdb=#
+        newdb=# SET enable_seqscan = OFF;
+        SET
+        newdb=#
+        newdb=# EXPLAIN SELECT title, content FROM articles WHERE content_tsvector @@
+        newdb-# to_tsquery('english', 'PostgreSQL & full-text');
+                                                          QUERY PLAN
+        ---------------------------------------------------------------------------------------------------------------
+         Bitmap Heap Scan on articles  (cost=20.00..24.01 rows=1 width=64)
+           Recheck Cond: (content_tsvector @@ '''postgresql'' & ''full-text'' <-> ''full'' <-> ''text'''::tsquery)
+           ->  Bitmap Index Scan on lesson15fultext  (cost=0.00..20.00 rows=1 width=0)
+                 Index Cond: (content_tsvector @@ '''postgresql'' & ''full-text'' <-> ''full'' <-> ''text'''::tsquery)
+        (4 rows)
+        
+        newdb=# ^C
+        newdb=#
 
