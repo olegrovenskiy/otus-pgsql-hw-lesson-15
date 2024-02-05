@@ -281,16 +281,29 @@ CREATE INDEX lesson15fultext ON articles USING gin (content_tsvector);
         newdb=# SET enable_seqscan = OFF;
         SET
         newdb=#
-        newdb=# EXPLAIN SELECT title, content FROM articles WHERE content_tsvector @@
-        newdb-# to_tsquery('english', 'PostgreSQL & full-text');
-                                                          QUERY PLAN
-        ---------------------------------------------------------------------------------------------------------------
-         Bitmap Heap Scan on articles  (cost=20.00..24.01 rows=1 width=64)
-           Recheck Cond: (content_tsvector @@ '''postgresql'' & ''full-text'' <-> ''full'' <-> ''text'''::tsquery)
-           ->  Bitmap Index Scan on lesson15fultext  (cost=0.00..20.00 rows=1 width=0)
-                 Index Cond: (content_tsvector @@ '''postgresql'' & ''full-text'' <-> ''full'' <-> ''text'''::tsquery)
+
+        newdb=#
+        newdb=# EXPLAIN SELECT title, content FROM articles WHERE content_tsvector @@ to_tsquery('english', 'PostgreSQL');
+                                          QUERY PLAN
+        ------------------------------------------------------------------------------
+         Bitmap Heap Scan on articles  (cost=8.00..12.01 rows=1 width=64)
+           Recheck Cond: (content_tsvector @@ '''postgresql'''::tsquery)
+           ->  Bitmap Index Scan on lesson15fultext  (cost=0.00..8.00 rows=1 width=0)
+                 Index Cond: (content_tsvector @@ '''postgresql'''::tsquery)
         (4 rows)
         
-        newdb=# ^C
         newdb=#
 
+        newdb=#
+        newdb=# SELECT title, content FROM articles WHERE  content_tsvector @@ to_tsquery('english', 'PostgreSQL');
+                 title          |                                     content
+        ------------------------+----------------------------------------------------------------------------------
+         PostgreSQL Index Types | PostgreSQL provides several index types: B-tree, Hash, GiST, SP-GiST, GIN, BRIN.
+        (1 row)
+
+Индекс lesson15fultext используется в поиске
+
+
+
+
+        
